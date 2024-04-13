@@ -2684,32 +2684,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\broga\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "/home/agmas/.nuget/packages/": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "0.0.1",
     "restore": {
-      "projectUniqueName": "F:\\LethalPrankMod\\LethalRecordingMod\\LethalRecordingMod\\LethalRecordingMod.csproj",
+      "projectUniqueName": "/home/agmas/Documents/GitHub/LethalRecordingMod/LethalRecordingMod/LethalRecordingMod.csproj",
       "projectName": "LethalRecordingMod",
-      "projectPath": "F:\\LethalPrankMod\\LethalRecordingMod\\LethalRecordingMod\\LethalRecordingMod.csproj",
-      "packagesPath": "C:\\Users\\broga\\.nuget\\packages\\",
-      "outputPath": "F:\\LethalPrankMod\\LethalRecordingMod\\LethalRecordingMod\\obj\\",
+      "projectPath": "/home/agmas/Documents/GitHub/LethalRecordingMod/LethalRecordingMod/LethalRecordingMod.csproj",
+      "packagesPath": "/home/agmas/.nuget/packages/",
+      "outputPath": "/home/agmas/Documents/GitHub/LethalRecordingMod/LethalRecordingMod/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "F:\\LethalPrankMod\\LethalRecordingMod\\LethalRecordingMod\\NuGet.Config",
-        "C:\\Users\\broga\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/agmas/Documents/GitHub/LethalRecordingMod/LethalRecordingMod/NuGet.Config",
+        "/home/agmas/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.1"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {},
         "https://nuget.bepinex.dev/v3/index.json": {}
       },
@@ -2764,7 +2757,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.103/RuntimeIdentifierGraph.json"
       }
     }
   }
