@@ -9,6 +9,7 @@ namespace LethalRecordingMod
         {
             // Plugin startup logic
             Logger.LogInfo($"Plugin LethalRecordingMod hath become loaded!");
+            Logger.LogInfo(":3");
         }
     }
 }
