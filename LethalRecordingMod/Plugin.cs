@@ -37,18 +37,18 @@ namespace LethalRecordingMod
 
 	public class TrollSettingValue
 	{
-		TrollSettingType type;
-		bool toggle;
-		double val;
-		long person;
-		double IGT; // 0-1, 0 = start of the day, 1 = midnight
-		byte RLT_month; // Don't know why you'd want this
-		byte RLT_mday; // Day of the month
-		byte RLT_wday; // Day of the week
-		byte RLT_hour; // Hour
-		byte RLT_minute; // Minute
-		byte RLT_second; // Second, optional
-		short RLT_millisecond; // Millisecond, optional
+		public TrollSettingType type;
+		public bool toggle;
+		public double val;
+		public long person;
+		public double IGT; // 0-1, 0 = start of the day, 1 = midnight
+		public byte RLT_month; // Don't know why you'd want this
+		public byte RLT_mday; // Day of the month
+		public byte RLT_wday; // Day of the week
+		public byte RLT_hour; // Hour
+		public byte RLT_minute; // Minute
+		public byte RLT_second; // Second, optional
+		public short RLT_millisecond; // Millisecond, optional
 	}
 
 
@@ -66,13 +66,12 @@ namespace LethalRecordingMod
 
 	public class Troll // Base class
 	{
-		public:
-		bool repeatable = true;
-		int timesOccured = 0;
-		bool clientSide = false;
-		long targetSteamID;
-		bool active;
-		List<TrollSetting> settings;
+		public bool repeatable = true;
+		public int timesOccured = 0;
+		public bool clientSide = false;
+		public long targetSteamID;
+		public bool active;
+		public List<TrollSetting> settings;
 		public int OnTrigger() {} // Should be overwritten by most trolls, returns 0 on success, should be used instead of Start or Awake to be toggleable
 		public int OnStop() {}
 		public int WhileActive(double deltaTime) {} // Should be used instead of Update, to make troll able to be disabled
