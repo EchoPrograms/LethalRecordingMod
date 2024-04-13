@@ -1,0 +1,11 @@
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\bin\Debug\netstandard2.1\LethalRecordingMod.deps.json
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\bin\Debug\netstandard2.1\LethalRecordingMod.dll
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\bin\Debug\netstandard2.1\LethalRecordingMod.pdb
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.csproj.AssemblyReference.cache
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\PluginInfo.cs
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.GeneratedMSBuildEditorConfig.editorconfig
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.AssemblyInfoInputs.cache
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.AssemblyInfo.cs
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.csproj.CoreCompileInputs.cache
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.dll
+F:\LethalPrankMod\LethalRecordingMod\LethalRecordingMod\obj\Debug\netstandard2.1\LethalRecordingMod.pdb

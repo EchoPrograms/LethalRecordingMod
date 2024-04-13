@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 
-namespace MyFirstPlugin
+namespace LethalRecordingMod
 {
     [BepInPlugin("TheNerds", "LethalRecordingMod", "0.0.1")]
     public class Plugin : BaseUnityPlugin
@@ -8,7 +8,7 @@ namespace MyFirstPlugin
         private void Awake()
         {
             // Plugin startup logic
-            Logger.LogInfo($"Plugin TheNerds.LethalRecordingMod is loaded!");
+            Logger.LogInfo($"Plugin LethalRecordingMod hath become loaded!");
         }
     }
 }
