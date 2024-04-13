@@ -110,4 +110,11 @@ namespace LethalRecordingMod
 			}
 		}
 	}
+	public class ControlPanel // For interacting with every troll and spawning in new trolls
+	{
+		public ControlPanel(long steamID)
+		{
+			
+		}
+	}
 }
