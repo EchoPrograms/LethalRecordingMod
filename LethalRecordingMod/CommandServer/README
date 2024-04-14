@@ -11,3 +11,12 @@ Server arguments:
 		Import initial server state from [FILE]
 	-p [PORT]:
 		Use [PORT] as server port, default is 80
+
+
+Serverauth script usage:
+	-a [USER]:
+		Add user [USER] and generate key
+	-r:
+		Reset all keys
+	-R [USER]:
+		Reset key of [USER]
