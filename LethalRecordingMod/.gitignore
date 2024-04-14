@@ -1,1 +1,3 @@
-LethalRecordingMod.csproj
+bin/
+obj/
+.vs

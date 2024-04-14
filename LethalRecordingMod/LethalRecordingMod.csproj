@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<AssemblyName>LethalRecordingMod</AssemblyName>
+		<Description>A mod to improve LC for recording</Description>
+		<Version>0.0.1</Version>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(SteamCommonPath)' == ''">
+		<SteamCommonPath>C:\Program Files (x86)\Steam\steamapps\common\</SteamCommonPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+		<PackageReference Include="BepInEx.Core" Version="5.*" />
+		<PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+		<PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.Netcode.Runtime">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/Unity.Netcode.Runtime.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/UnityEngine.UI.dll</HintPath>
+		</Reference>
+		<Reference Include="CSync">
+			<HintPath>Lib/CSync.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.Collections">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/Unity.Collections.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.Netcode.Runtime">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/Unity.TextMeshPro.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.Netcode.Runtime">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/Unity.InputSystem.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(SteamCommonPath)/Lethal Company/Lethal Company_Data/Managed/UnityEngine.dll</HintPath>
+			<!-- Edit this to the actual location -->
+		</Reference>
+	</ItemGroup>
+</Project>
