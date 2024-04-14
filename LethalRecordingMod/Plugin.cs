@@ -19,7 +19,7 @@ namespace LethalRecordingMod
 			if (instance == null) {
                 instance = this;
             }
-            testTroll = new IntervalTroll(1, 20);
+            testTroll = new IntervalTroll(0.01, 100);
             logger = Logger;
             logger.LogInfo($"Plugin LethalRecordingMod hath become loaded!");
 		}
@@ -93,7 +93,7 @@ namespace LethalRecordingMod
         }
         public override int OnTrigger()
         {
-            Debug.Log("Pranked");
+            Plugin.logger.LogFatal("Pranked");
 			return 0;
         }
         public override int WhileActive()
