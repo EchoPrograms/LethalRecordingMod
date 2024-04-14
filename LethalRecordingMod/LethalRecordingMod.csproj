@@ -48,4 +48,8 @@
 			<!-- Edit this to the actual location -->
 		</Reference>
 	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="echo F|xcopy  &quot;$(SolutionDir)bin\Debug\netstandard2.1\LethalRecordingMod.dll&quot; &quot;F:\LethalPrankMod\Lethal Company\BepInEx\Plugins\LethalRecordingMod.dll&quot; /Y" />
+	</Target>
 </Project>
