@@ -24,12 +24,8 @@ namespace LethalRecordingMod
             logger.LogInfo($"Plugin LethalRecordingMod hath become loaded!");
 		}
 
-        public static void AddUpdateCallback(Action updateMethod)
-        {
-            instance.updateCallback += updateMethod;
-        }
 
-        private Action updateCallback;
+        public Action updateCallback;
         private void Update()
         {
             updateCallback();
@@ -43,37 +39,55 @@ namespace LethalRecordingMod
 		public int timesOccured = 0;
 		public bool clientSide = false;
 		public long targetSteamID;
-		public bool active = true;
+		private bool active = true;
 		public Troll()
 		{
-            Plugin.AddUpdateCallback(OnUpdate);
+            Plugin.instance.updateCallback += OnUpdate;
         }
 		public abstract int OnTrigger(); // Should be overwritten by most trolls, returns 0 on success, should be used instead of Start or Awake to be toggleable
 		public abstract int OnStop();
-		public virtual int WhileActive() { return 0; } // Should be used instead of Update, to make troll able to be disabled
+		public abstract int OnStart();
+
+		public bool GetStatus()
+		{
+			return active;
+		}
+		public virtual int Start()
+		{
+			active = true;
+			return OnStart();
+		}
+		public virtual int Stop()
+		{
+			active = false;
+			return OnStop();
+		}
+		public abstract int WhileActive(); // Should be used instead of Update, to make troll able to be disabled
 		private void OnUpdate()
 		{
 			if(active)
 			{
 				WhileActive();
-            }
+            } 
 		}
 	}
 	public class IntervalTroll : Troll // Still base class
 	{
 		public double interval; // Seconds
 		public double chance; // Percentage
-		private double timer;
+		private double timer = 0;
 
 
         public IntervalTroll(double interval = 1, double chance = 100)
 		{
-            Debug.Log("Prank Init");
-            timer = 0;
 			this.chance = chance;
 			this.interval = interval;
         }
         public override int OnStop()
+        {
+			return 0;
+        }
+        public override int OnStart()
         {
 			return 0;
         }
