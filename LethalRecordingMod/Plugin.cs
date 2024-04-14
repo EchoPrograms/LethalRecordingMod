@@ -3,25 +3,38 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using System.Collections.Generic;
-
+using UnityEngine;
+using System;
 namespace LethalRecordingMod
 {
 	[BepInPlugin("TheNerds.LethalRecordingMod", "LethalRecordingMod", "0.0.1")]
 	public class Plugin : BaseUnityPlugin
 	{
 		private readonly Harmony harmony = new Harmony("TheNerds.LethalRecordingMod");
-		public static Plugin Instance;
-		public ManualLogSource mls;
+		public static Plugin instance;
+		public IntervalTroll testTroll;
+		public static ManualLogSource logger;
 		private void Awake()
 		{
-			if (Instance == null) {
-				Instance = this;
-			} 
-			// Plugin startup logic
-			Logger.LogInfo($"Plugin LethalRecordingMod hath become loaded!");
-			mls.LogInfo("We're up and running!");
+			if (instance == null) {
+                instance = this;
+            }
+            testTroll = new IntervalTroll(1, 20);
+            logger = Logger;
+            logger.LogInfo($"Plugin LethalRecordingMod hath become loaded!");
 		}
-	}
+
+        public static void AddUpdateCallback(Action updateMethod)
+        {
+            instance.updateCallback += updateMethod;
+        }
+
+        private Action updateCallback;
+        private void Update()
+        {
+            updateCallback();
+        }
+    }
 
 
 	public abstract class Troll // Base class
@@ -30,31 +43,58 @@ namespace LethalRecordingMod
 		public int timesOccured = 0;
 		public bool clientSide = false;
 		public long targetSteamID;
-		public bool active;
+		public bool active = true;
+		public Troll()
+		{
+            Plugin.AddUpdateCallback(OnUpdate);
+        }
 		public abstract int OnTrigger(); // Should be overwritten by most trolls, returns 0 on success, should be used instead of Start or Awake to be toggleable
 		public abstract int OnStop();
-		public abstract int WhileActive(); // Should be used instead of Update, to make troll able to be disabled
-
+		public virtual int WhileActive() { return 0; } // Should be used instead of Update, to make troll able to be disabled
+		private void OnUpdate()
+		{
+			if(active)
+			{
+				WhileActive();
+            }
+		}
 	}
 	public class IntervalTroll : Troll // Still base class
 	{
-		public const int defaultInterval = -1; // Seconds
-		public const double defaultChance = 100; // Percentage
-		public IntervalTroll()
-		{
+		public double interval; // Seconds
+		public double chance; // Percentage
+		private double timer;
 
-		}
+
+        public IntervalTroll(double interval = 1, double chance = 100)
+		{
+            Debug.Log("Prank Init");
+            timer = 0;
+			this.chance = chance;
+			this.interval = interval;
+        }
         public override int OnStop()
         {
 			return 0;
         }
         public override int OnTrigger()
         {
+            Debug.Log("Pranked");
 			return 0;
         }
         public override int WhileActive()
 		{
-			return 0;
+            timer += Time.deltaTime;
+			if(timer > interval) {
+				timer = 0;
+                if (UnityEngine.Random.Range(0f, 100f) < chance)
+				{
+					OnTrigger();
+				}
+            }
+
+            return 0;
 		}
 	}
 }
+
