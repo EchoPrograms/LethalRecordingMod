@@ -45,6 +45,9 @@ int main (int argc, char*args[])
 	std::vector<std::string> authKeys;
 	std::vector<std::string> authIPs;
 	std::string line;
+	std::string serverVersion;
+	std::ifstream serverVersionF("serverVersion", std::ios::in);
+	getline(serverVersionF, serverVersion);
 	while (getline(authUsersF, line))
 	{
 		authUsers.push_back(line);
@@ -190,7 +193,6 @@ int main (int argc, char*args[])
 					{
 						std::string message = "EC:Stop pretending to be someone else, bozo!\n";
 						write(clientfd, message.c_str(), message.length());
-						close(clientfd);
 						continue;
 					}
 					recUser = authUsers[i];
@@ -202,7 +204,6 @@ int main (int argc, char*args[])
 					{
 						std::string message = "EC:Stop pretending to be someone else, bozo!\n";
 						write(clientfd, message.c_str(), message.length());
-						close(clientfd);
 						continue;
 					}
 					recUser = authUsers[i];
@@ -245,7 +246,6 @@ int main (int argc, char*args[])
 				std::string message = "EC: That message is not messageing (not enough shit)\n";
 				write(clientfd, message.c_str(), message.length());
 				error = true;
-				close(clientfd);
 			}
 			if (!error)
 			{
@@ -262,7 +262,6 @@ int main (int argc, char*args[])
 						std::string message = "EC: That message is not messageing\n";
 						write(clientfd, message.c_str(), message.length());
 						error = true;
-						close(clientfd);
 						break;
 					}
 					std::string trollData = frame.getTrollString(trollName);
@@ -307,7 +306,6 @@ int main (int argc, char*args[])
 						std::string message = "EC: That message is not messageing\n";
 						write(clientfd, message.c_str(), message.length());
 						error = true;
-						close(clientfd);
 						break;
 					}
 					if (!frame.modifyTroll(trollName, trollData))
@@ -315,12 +313,10 @@ int main (int argc, char*args[])
 						std::string message = "EC: HA, YOU MADE AN INVALID MESSAGE! IDIOT!";
 						write(clientfd, message.c_str(), message.length());
 						error = true;
-						close(clientfd);
 						break;
 					}
 					std::string message = "S";
 					write(clientfd, message.c_str(), message.length());
-					close(clientfd);
 					break;
 					}
 				case 's': {
@@ -332,7 +328,6 @@ int main (int argc, char*args[])
 						std::string message = "EC: That message is not messageing\n";
 						write(clientfd, message.c_str(), message.length());
 						error = true;
-						close(clientfd);
 						break;
 					}
 					if (!frame.modifySetting(trollName, settingName, toTrollSetting(settingData)))
@@ -340,19 +335,20 @@ int main (int argc, char*args[])
 						std::string message = "EC: HA, YOU MADE AN INVALID MESSAGE! IDIOT!";
 						write(clientfd, message.c_str(), message.length());
 						error = true;
-						close(clientfd);
 						break;
 					}
 					std::string message = "S";
 					write(clientfd, message.c_str(), message.length());
-					close(clientfd);
 					break;
 					}
+				case 'v': {
+					write(clientfd, serverVersion.c_str(), serverVersion.length());
+					break;
+				}
 				default: {
 					// Unknown command
 					std::string message = "EC:That's not a command my guy\n";
 					write(clientfd, message.c_str(), message.length());
-					close(clientfd);
 					error = true;
 					break;
 					}
@@ -360,6 +356,7 @@ int main (int argc, char*args[])
 			}
 			if (error)
 			{
+				close(clientfd);
 				continue;
 			}
 		}
