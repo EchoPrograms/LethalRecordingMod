@@ -4,9 +4,10 @@
 #ifndef TROLL_HPP
 #define TROLL_HPP
 #define SETTINGTYPE_NONE -1
-#define SETTINGTYPE_BOOL 1
-#define SETTINGTYPE_DOUBLE 2
-#define SETTINGTYPE_STEAMID 3
+#define SETTINGTYPE_BOOL 0x31
+#define SETTINGTYPE_DOUBLE 0x32
+#define SETTINGTYPE_STEAMID 0x33
+#define SETTINGTYPE_INT 0x34
 
 
 std::string sepstr(std::string str, int p, char c)
@@ -47,17 +48,18 @@ std::string toString(Troll t)
 		return "";
 	}
 	out += t.name;
-	out += '\0';
-	out += (char)t.settings.size();
+	out += '/';
+	out += std::to_string(t.settings.size());
+	out += '/';
 	for (int i = 0; i < t.settings.size(); i++)
 	{
 		out += (char)t.settings[i].type;
 		out += t.settings[i].name;
-		out += '\0';
-		out += out.value;
+		out += '/';
+		out += t.settings[i].value;
 		if (i < t.settings.size() - 1)
 		{
-			out += '\0';
+			out += '/';
 		}
 	}
 	return out;
@@ -69,7 +71,7 @@ std::string toString(TrollSetting in)
 	std::string out;
 	out += (char)in.type;
 	out += in.name;
-	out += '\0';
+	out += '/';
 	out += in.value;
 	return out;
 }
@@ -85,9 +87,9 @@ TrollSetting toTrollSetting(std::string in)
 		return out;
 	}
 	out.type = in[0];
-	out.name = in.substr(1, in.find('\0') - 1);
-	int j = in.find('\0') + 1;
-	out.value = in.substr(j, std::string::npos);
+	out.name = sepstr(in, 0, '/');
+	out.name.erase(out.name.begin());
+	out.value = sepstr(in, 1, '/');
 	return out;
 }
 
@@ -95,22 +97,28 @@ TrollSetting toTrollSetting(std::string in)
 int toTroll(std::string in, Troll*out)
 {
 	out->settings.clear();
-	out->name = "";
-	int i;
-	for (i = 0; in[i] != '\0' && i < in.size(); i++)
+	out->name = sepstr(in, 0, '/');
+	int i = 2;
+	int settingCount;
+	try
 	{
-		out->name += in[i];
+		settingCount = std::stoi(sepstr(in, 1, '/'));
 	}
-	if (i >= in.size())
+	catch (...)
 	{
-		std::cerr << "Tried converting string that does not contain enough information to Troll" << std::endl;
-		return 1;
+		settingCount = -1;
 	}
-	int settingCount = (int)in[++i];
+	if (settingCount == -1)
+	{
+		std::cerr << "Invalid setting count while importing troll!" << std::endl;
+		return 2;
+	}
 	while (out->settings.size() < settingCount && i < in.size())
 	{
 		out->settings.reserve(1);
-		std::string croppedString = sepstr(in, i, '\0') + '\0' + sepstr(in, ++i, '\0');
+		std::string croppedString = sepstr(in, i, '/') + '/';
+		i++;
+		croppedString += sepstr(in, i, '/');
 		TrollSetting ts = toTrollSetting(croppedString);
 		if (ts.type == SETTINGTYPE_NONE)
 		{
@@ -200,6 +208,30 @@ class TrollState
 		}
 		file.close();
 		return true;
+	}
+	bool modifySettingValue(std::string trollName, std::string settingName, std::string newValue)
+	{
+		bool foundAtLeastOneSetting = false;
+		for (int i = 0; i < trolls.size(); i++)
+		{
+			if (trolls[i].name == trollName)
+			{
+				for (int j = 0; j < trolls[i].settings.size(); j++)
+				{
+					if (trolls[i].settings[j].name == settingName)
+					{
+						trolls[i].settings[j].value = newValue;
+						std::cout << "Successfully modified " << settingName << " of troll " << trollName << std::endl;
+						foundAtLeastOneSetting = true;
+					}
+				}
+			}
+		}
+		if (!foundAtLeastOneSetting)
+		{
+			std::cerr << "Either didn't find troll called " << trollName << ", or couldn't find setting " << settingName << " within it." << std::endl;
+		}
+		return foundAtLeastOneSetting;
 	}
 	bool modifySetting(std::string trollName, std::string settingName, TrollSetting newValue)
 	{
