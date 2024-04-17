@@ -85,6 +85,14 @@ int main (int argc, char*args[])
 					std::cerr << "Failed to load!" << std::endl;
 					return 1;
 				}
+				for (int i = 0; i < frame.trolls.size(); i++)
+				{
+					std::cout << frame.trolls[i].name << std::endl;
+					for (int j = 0; j < frame.trolls[i].settings.size(); j++)
+					{
+						std::cout << "\t" << frame.trolls[i].settings[j].name << ", " << frame.trolls[i].settings[j].value << std::endl;
+					}
+				}
 				next = '\0';
 				break;
 			case 'p':
@@ -296,7 +304,7 @@ int main (int argc, char*args[])
 					break;
 					}
 				case 'l': {
-					std::string trollData = frame.exportState();
+					std::string trollData = frame.exportState(false);
 					std::string message;
 					if (trollData == "")
 					{
@@ -347,7 +355,6 @@ int main (int argc, char*args[])
 						error = true;
 						break;
 					}
-					std::cout << trollName << ", " << settingName << ", " << settingData << std::endl;
 					if (!frame.modifySettingValue(trollName, settingName, settingData))
 					{
 						std::string message = "EC: HA, YOU MADE AN INVALID MESSAGE! IDIOT!";

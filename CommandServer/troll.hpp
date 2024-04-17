@@ -55,7 +55,7 @@ std::string toString(Troll t)
 	{
 		out += (char)t.settings[i].type;
 		out += t.settings[i].name;
-		out += '/';
+		out += '\\';
 		out += t.settings[i].value;
 		if (i < t.settings.size() - 1)
 		{
@@ -71,7 +71,7 @@ std::string toString(TrollSetting in)
 	std::string out;
 	out += (char)in.type;
 	out += in.name;
-	out += '/';
+	out += '\\';
 	out += in.value;
 	return out;
 }
@@ -87,9 +87,9 @@ TrollSetting toTrollSetting(std::string in)
 		return out;
 	}
 	out.type = in[0];
-	out.name = sepstr(in, 0, '/');
+	out.name = sepstr(in, 0, '\\');
 	out.name.erase(out.name.begin());
-	out.value = sepstr(in, 1, '/');
+	out.value = sepstr(in, 1, '\\');
 	return out;
 }
 
@@ -113,12 +113,10 @@ int toTroll(std::string in, Troll*out)
 		std::cerr << "Invalid setting count while importing troll!" << std::endl;
 		return 2;
 	}
-	while (out->settings.size() < settingCount && i < in.size())
+	while (out->settings.size() < settingCount)
 	{
 		out->settings.reserve(1);
-		std::string croppedString = sepstr(in, i, '/') + '/';
-		i++;
-		croppedString += sepstr(in, i, '/');
+		std::string croppedString = sepstr(in, i, '/');
 		TrollSetting ts = toTrollSetting(croppedString);
 		if (ts.type == SETTINGTYPE_NONE)
 		{
@@ -126,6 +124,7 @@ int toTroll(std::string in, Troll*out)
 			return 3;
 		}
 		out->settings.push_back(ts);
+		i++;
 	}
 	return 0;
 }
@@ -135,7 +134,7 @@ class TrollState
 {
 	public:
 	std::vector<Troll> trolls;
-	std::string exportState()
+	std::string exportState(bool http)
 	{
 		std::string out;
 		for (int i = 0; i < trolls.size(); i++)
@@ -150,13 +149,13 @@ class TrollState
 				std::cerr << "Unable to transform troll into string while exporting state!" << std::endl;
 				return "";
 			}
-			out += '\n';
+			out += http ? '%' : '\n'; // Different depending on server mode
 		}
 		return out;
 	}
-	void exportState(std::string filename) // Careful, this will override files!
+	void exportState(std::string filename, bool http) // Careful, this will override files!
 	{
-		std::string fullOutString = exportState();
+		std::string fullOutString = exportState(http);
 		if (fullOutString == "")
 		{
 			std::cerr << "Failed to export" << std::endl;
@@ -178,10 +177,10 @@ class TrollState
 		trolls.push_back(t);
 		return true;
 	}
-	bool importStateString(std::string in)
+	bool importStateString(std::string in, bool http)
 	{
 		trolls.clear();
-		std::string line = sepstr(in, 0, '\n');
+		std::string line = sepstr(in, 0, http ? '%' : '\n');
 		for (int i = 1; line != ""; i++)
 		{
 			if (!importTroll(line))
@@ -189,7 +188,7 @@ class TrollState
 				std::cerr << "Failed to import state!" << std::endl;
 				return false;
 			}
-			line = sepstr(in, i, '\n');
+			line = sepstr(in, i, http ? '%' : '\n');
 		}
 		return true;
 	}

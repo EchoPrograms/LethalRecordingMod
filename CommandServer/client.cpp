@@ -19,7 +19,7 @@
 #define REQUEST_RERROR 28
 
 
-const std::string clientVersion = "1.0.0"; // Change this if you significantly update the client!
+const std::string clientVersion = "1.0.1"; // Change this if you significantly update the client!
 
 
 class Config
@@ -390,7 +390,7 @@ int main(int argc, char*args[])
 		return 7;
 	}
 	std::cout << req.responseData << std::endl;
-	if (!frame.importStateString(req.responseData))
+	if (!frame.importStateString(req.responseData, false))
 	{
 		std::cerr << "Got server status, but string was invalid!" << std::endl;
 		return 8;
@@ -431,7 +431,7 @@ int main(int argc, char*args[])
 				std::cerr << "Failed to get server status!" << std::endl;
 				return 7;
 			}
-			if (!frame.importStateString(req.responseData))
+			if (!frame.importStateString(req.responseData, false))
 			{
 				std::cerr << "Got server status, but string was invalid!" << std::endl;
 				return 8;
@@ -482,7 +482,7 @@ int main(int argc, char*args[])
 				else
 				{
 					frame.trolls[focusedTroll].settings[focusedSetting].value = enteredValue;
-					focusedSetting == -1;
+					focusedSetting = -1;
 					enteredValue = "";
 					lastServerMessage = req.responseData;
 				}
