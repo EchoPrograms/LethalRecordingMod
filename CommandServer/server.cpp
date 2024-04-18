@@ -10,10 +10,12 @@
 #include <sys/socket.h>
 #include <signal.h>
 #include "troll.hpp"
+#include "config.hpp"
 
 
 bool quit = false;
 TrollState*frameptr;
+const std::string serverVersion = "1.0.2";
 
 
 void signalHandler(int signum)
@@ -31,12 +33,19 @@ void signalHandler(int signum)
 
 int main (int argc, char*args[])
 {
+	ConfigFile configs;
+	if (!configs.importFile("serverconfig"))
+	{
+		std::cerr << "Failed to import configuration file!" << std::endl;
+		return 1;
+	}
 	TrollState frame;
 	frameptr = &frame;
 	int sockfd = -1;
 	struct sockaddr_in addr;
 	char next = '\0';
-	int port = 80;
+	int port = -1;
+	bool importedState = false;
 	struct sigaction sigact;
 	sigact.sa_handler = &signalHandler;
 	sigemptyset(&sigact.sa_mask);
@@ -46,9 +55,6 @@ int main (int argc, char*args[])
 	std::vector<std::string> authKeys;
 	std::vector<std::string> authIPs;
 	std::string line;
-	std::string serverVersion;
-	std::ifstream serverVersionF("serverVersion", std::ios::in);
-	getline(serverVersionF, serverVersion);
 	while (getline(authUsersF, line))
 	{
 		authUsers.push_back(line);
@@ -85,14 +91,7 @@ int main (int argc, char*args[])
 					std::cerr << "Failed to load!" << std::endl;
 					return 1;
 				}
-				for (int i = 0; i < frame.trolls.size(); i++)
-				{
-					std::cout << frame.trolls[i].name << std::endl;
-					for (int j = 0; j < frame.trolls[i].settings.size(); j++)
-					{
-						std::cout << "\t" << frame.trolls[i].settings[j].name << ", " << frame.trolls[i].settings[j].value << std::endl;
-					}
-				}
+				importedState = true;
 				next = '\0';
 				break;
 			case 'p':
@@ -118,6 +117,45 @@ int main (int argc, char*args[])
 				break;
 		}
 	}
+	if (!importedState)
+	{
+		std::string stateFile = configs.get("StateFile");
+		if (stateFile != "")
+		{
+			if (!frame.importState(stateFile))
+			{
+				std::cerr << "Failed to load!" << std::endl;
+				return 1;
+			}
+
+		}
+		else
+		{
+			std::cerr << "Failed to load (no initial state file)!" << std::endl;
+			return 1;
+		}
+	}
+	if (port == -1)
+	{
+		std::string portString = configs.get("Port");
+		if (portString == "")
+		{
+			std::cout << "No port defined! Using 80." << std::endl;
+			port = 80;
+		}
+		else
+		{
+			try
+			{
+				port = std::stoi(portString);
+			}
+			catch (...)
+			{
+				std::cerr << "Invalid port string! Using port 80." << std::endl;
+				port = 80;
+			}
+		}
+	}
 	std::cout << "Loading server..." << std::endl;
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0)
@@ -128,6 +166,7 @@ int main (int argc, char*args[])
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = INADDR_ANY;
+	std::cout << "Starting server on port " << htons(addr.sin_port) << std::endl;
 	if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
 	{
 		std::cerr << "Failed to bind! Check if port " << port << " is open." << std::endl;
@@ -142,6 +181,7 @@ int main (int argc, char*args[])
 	{
 		socklen_t addrlen;
 		int clientfd = accept(sockfd, (struct sockaddr*)&addr, &addrlen);
+		std::cout << "Found client or error" << std::endl;
 		std::string receivedData = "";
 		char buffer[1025];
 		int sizeRead;
@@ -180,7 +220,7 @@ int main (int argc, char*args[])
 		while (sizeRead > 0 || (sizeRead == -1 && finish == -1));
 		if (finish > 0)
 		{
-			std::cerr << "Error while reading from client!" << std::endl;
+			std::cerr << "Error while reading from client! Errno: " << errno << std::endl;
 			close(clientfd);
 			continue;
 		}
@@ -216,6 +256,7 @@ int main (int argc, char*args[])
 					if (recUser != "")
 					{
 						std::string message = "EC:Stop pretending to be someone else, bozo!\n";
+						std::cout << "User is pretending to be mewing frfr" << std::endl;
 						write(clientfd, message.c_str(), message.length());
 						continue;
 					}
@@ -227,6 +268,7 @@ int main (int argc, char*args[])
 					if (recUser != authUsers[i] && setByIP)
 					{
 						std::string message = "EC:Stop pretending to be someone else, bozo!\n";
+						std::cout << "User is pretending to be mewing frfr (2)" << std::endl;
 						write(clientfd, message.c_str(), message.length());
 						continue;
 					}
@@ -243,6 +285,7 @@ int main (int argc, char*args[])
 			if (recUser == "")
 			{
 				std::string message = "EC:Who are you? Go get a key or something.\n";
+				std::cout << "User is pretending exist frfr" << std::endl;
 				write(clientfd, message.c_str(), message.length());
 				close(clientfd);
 				continue;
@@ -355,6 +398,7 @@ int main (int argc, char*args[])
 						error = true;
 						break;
 					}
+					std::cout << trollName << ", " << settingName << ", " << settingData << std::endl;
 					if (!frame.modifySettingValue(trollName, settingName, settingData))
 					{
 						std::string message = "EC: HA, YOU MADE AN INVALID MESSAGE! IDIOT!";

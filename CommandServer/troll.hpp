@@ -113,10 +113,11 @@ int toTroll(std::string in, Troll*out)
 		std::cerr << "Invalid setting count while importing troll!" << std::endl;
 		return 2;
 	}
-	while (out->settings.size() < settingCount)
+	while (out->settings.size() < settingCount && i < in.size())
 	{
 		out->settings.reserve(1);
 		std::string croppedString = sepstr(in, i, '/');
+		i++;
 		TrollSetting ts = toTrollSetting(croppedString);
 		if (ts.type == SETTINGTYPE_NONE)
 		{
@@ -124,7 +125,6 @@ int toTroll(std::string in, Troll*out)
 			return 3;
 		}
 		out->settings.push_back(ts);
-		i++;
 	}
 	return 0;
 }
@@ -149,13 +149,13 @@ class TrollState
 				std::cerr << "Unable to transform troll into string while exporting state!" << std::endl;
 				return "";
 			}
-			out += http ? '%' : '\n'; // Different depending on server mode
+			out += !http ? '\n' : '%';
 		}
 		return out;
 	}
-	void exportState(std::string filename, bool http) // Careful, this will override files!
+	void exportState(std::string filename) // Careful, this will override files!
 	{
-		std::string fullOutString = exportState(http);
+		std::string fullOutString = exportState(false);
 		if (fullOutString == "")
 		{
 			std::cerr << "Failed to export" << std::endl;

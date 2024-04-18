@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #include "troll.hpp"
+#include "config.hpp"
 #define REQUEST_ACCEPTED 1
 #define REQUEST_SUCCESSFUL 2
 #define REQUEST_ERROR 4
@@ -19,63 +20,9 @@
 #define REQUEST_RERROR 28
 
 
-const std::string clientVersion = "1.0.1"; // Change this if you significantly update the client!
+const std::string clientVersion = "1.0.0"; // Change this if you significantly update the client!
 
 
-class Config
-{
-	public:
-	std::string name;
-	std::string value;
-	bool fromString(std::string in)
-	{
-		name = sepstr(in, 0, ':');
-		value = sepstr(in, 1, ':');
-		if (name == "" || value == "")
-		{
-			name = "";
-			value = "";
-			return false;
-		}
-		return true;
-	}
-};
-
-
-class ConfigFile
-{
-	public:
-	std::vector<Config> configs;
-	bool importFile(std::string filename)
-	{
-		configs.clear();
-		std::ifstream file(filename, std::ios::in);
-		std::string line;
-		while (getline(file, line))
-		{
-			Config cfg;
-			if (!cfg.fromString(line))
-			{
-				configs.clear();
-				return false;
-			}
-			configs.push_back(cfg);
-		}
-		file.close();
-		return true;
-	}
-	std::string get(std::string configName)
-	{
-		for (int i = 0; i < configs.size(); i++)
-		{
-			if (configs[i].name == configName)
-			{
-				return configs[i].value;
-			}
-		}
-		return "";
-	}
-};
 
 
 class RequestInfo
@@ -152,6 +99,27 @@ std::string sendRequest(struct sockaddr_in addr, std::string req, bool waitForSe
 int handleServerRequest(RequestInfo*req)
 {
 	std::string serverResponse = sendRequest(req->address, req->requestString, true, req->key);
+	if (serverResponse[0] == '\n')
+	{
+		if (serverResponse == "\nEC")
+		{
+			std::cerr << "Failed to connect to server! (Check that the address is valid and you are connected!)" << std::endl;
+			req->success = REQUEST_CERROR;
+			return -3;
+		}
+		else if (serverResponse == "\nES")
+		{
+			std::cerr << "Failed to create socket!" << std::endl;
+			req->success = REQUEST_CERROR;
+			return -3;
+		}
+		else
+		{
+			std::cerr << "Failed to communicate with server!" << std::endl;
+			req->success = REQUEST_CERROR;
+			return -3;
+		}
+	}
 	std::string rHeader = sepstr(serverResponse, 0, ':');
 	req->success = 0;
 	req->responseData = "";
@@ -371,6 +339,7 @@ int main(int argc, char*args[])
 	{
 		return 5;
 	}
+	std::cout << htons(addr.sin_port) << ", " << port << std::endl;
 	RequestInfo req;
 	req.address = addr;
 	req.requestString = "v";
@@ -389,7 +358,6 @@ int main(int argc, char*args[])
 		std::cerr << "Failed to get server status!" << std::endl;
 		return 7;
 	}
-	std::cout << req.responseData << std::endl;
 	if (!frame.importStateString(req.responseData, false))
 	{
 		std::cerr << "Got server status, but string was invalid!" << std::endl;
@@ -491,7 +459,7 @@ int main(int argc, char*args[])
 		}
 		else if (focusedTroll != -1 && focusedSetting != -1)
 		{
-			if ((int)input >= 32 && (int)input < 127)
+			if ((int)input >= 32 && (int)input < 127 && input != '/' && input != '\\' && input != '%') // No non-printing or special protocol characters for you :P
 			{
 				enteredValue += input;
 			}
@@ -548,17 +516,19 @@ int main(int argc, char*args[])
 					break;
 					}
 				case ',': {
-					if (frame.trolls.size() > page + 1* 10)
-					{
-						page++;
-					}
-					break;
-					}
-				case '.': {
 					if (page > 0)
 					{
 						page--;
 					}
+					refresh = true;
+					break;
+					}
+				case '.': {
+					if (frame.trolls.size() > page + 1* 10)
+					{
+						page++;
+					}
+					refresh = true;
 					break;
 					}
 					
@@ -598,7 +568,7 @@ int main(int argc, char*args[])
 			}
 			else
 			{
-				std::cout << "\nSubpage " << page + 1 << " of " << ceil((double)frame.trolls[focusedTroll].settings.size()) << std::endl;
+				std::cout << "\nSubpage " << page + 1 << " of " << ceil((double)frame.trolls[focusedTroll].settings.size() / 10.0) << std::endl;
 			}
 			if (lastServerMessage != "")
 			{
