@@ -22,6 +22,30 @@ std::string sepstr(std::string str, int p, char c)
 }
 
 
+std::string sepstre(std::string str, int p, char c)
+{
+	std::string ret = str;
+	for (int i = 0; i < p; i++)
+	{
+		ret.erase(0, ret.find(c));
+		ret.erase(0, 1);
+	}
+	return ret;
+}
+
+
+std::string sepstrs(std::string str, int p, std::string s)
+{
+	std::string ret = str;
+	for (int i = 0; i < p; i++)
+	{
+		ret.erase(0, ret.find(s));
+		ret.erase(0, s.length());
+	}
+	return ret.substr(0, ret.find(s));
+}
+
+
 class TrollSetting
 {
 	public:
@@ -153,17 +177,22 @@ class TrollState
 		}
 		return out;
 	}
-	void exportState(std::string filename) // Careful, this will override files!
+	bool exportState(std::string filename) // Careful, this will override files!
 	{
 		std::string fullOutString = exportState(false);
 		if (fullOutString == "")
 		{
 			std::cerr << "Failed to export" << std::endl;
-			return;
+			return false;
 		}
 		std::fstream file(filename, std::ios::out | std::ios::trunc);
-		file << fullOutString;
-		file.close();
+		if (!file.fail())
+		{
+			file << fullOutString;
+			file.close();
+			return true;
+		}
+		return false;
 	}
 	bool importTroll(std::string str)
 	{
@@ -195,6 +224,11 @@ class TrollState
 	bool importState(std::string filename)
 	{
 		std::fstream file(filename, std::ios::in);
+		if (!file)
+		{
+			std::cerr << "Failed to open file " << filename << std::endl;
+			return false;
+		}
 		std::string line = "";
 		trolls.clear();
 		while (getline(file, line))
@@ -262,6 +296,10 @@ class TrollState
 	}
 	bool modifyTroll(std::string trollName, std::string trollString)
 	{
+		if (trollName == "" || trollString == "")
+		{
+			return false;
+		}
 		for (int i = 0; i < trolls.size(); i++)
 		{
 			if (trolls[i].name == trollName)

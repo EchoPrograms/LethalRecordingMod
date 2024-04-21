@@ -1,2 +1,4 @@
 Port:42069
 StateFile:lastState
+SaveFile:Save1
+LoadFile:Save1

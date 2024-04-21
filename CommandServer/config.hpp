@@ -29,9 +29,11 @@ class ConfigFile
 {
 	public:
 	std::vector<Config> configs;
+	std::string fileName;
 	bool importFile(std::string filename)
 	{
 		configs.clear();
+		fileName = filename;
 		std::ifstream file(filename, std::ios::in);
 		std::string line;
 		while (getline(file, line))
@@ -57,6 +59,44 @@ class ConfigFile
 			}
 		}
 		return "";
+	}
+	bool modifyConfig(std::string configName, std::string value)
+	{
+		bool found = false;
+		for (int i = 0; i < configs.size(); i++)
+		{
+			if (configs[i].name == configName)
+			{
+				configs[i].value = value;
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+		{
+			return false;
+		}
+		std::string fullFile = "";
+		std::ifstream configFileIn(fileName, std::ios::in);
+		if (!configFileIn)
+		{
+			return false;
+		}
+		std::string line;
+		while (getline(configFileIn, line))
+		{
+			if (sepstr(line, 0, ':') == configName)
+			{
+				line = configName + ":" + value;
+			}
+			fullFile += line;
+			fullFile += '\n';
+		}
+		configFileIn.close();
+		std::ofstream configFileOut(fileName, std::ios::out);
+		configFileOut << fullFile;
+		configFileOut.close();
+		return true;
 	}
 	ConfigFile() {}
 	ConfigFile(std::string fileName)
