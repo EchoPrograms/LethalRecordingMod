@@ -27,7 +27,7 @@
 
 bool quit = false;
 TrollState*frameptr;
-const std::string serverVersion = "1.2.0";
+const std::string serverVersion = "1.2.1";
 const std::vector<std::string> httpmethods = {"GET", "POST", "DELETE", "OPTIONS", "HEAD", "PUT", "CONNECT", "TRACE", "PATH"};
 ConfigFile configs;
 std::string saveFile = "";
@@ -701,7 +701,8 @@ int main (int argc, char*args[])
 				else
 				{
 					// Generate html file
-					std::string htmlFile = "<html><head><title>Troll server client</title></head><body>";
+					std::string htmlFile = "<html><head><title>Troll server client</title><meta http-equiv=\"refresh\" content=\"60\">";
+					htmlFile += "</head><body><button onClick=\"window.location.reload();\"></button>";
 					for (int i = 0; i < frame.trolls.size(); i++)
 					{
 						htmlFile += "<h1>" + frame.trolls[i].name + "</h1>";
@@ -709,7 +710,8 @@ int main (int argc, char*args[])
 						htmlFile += "<ul>";
 						for (int j = 0; j < frame.trolls[i].settings.size(); j++)
 						{
-							htmlFile += "<li>" + frame.trolls[i].settings[j].name + ": " + frame.trolls[i].settings[j].value + "</li>";
+							htmlFile += "<li>" + frame.trolls[i].settings[j].name + ": " + frame.trolls[i].settings[j].value + "</li><input id=\"" + frame.trolls[i].name + "/" + frame.trolls[i].settings[j].name + "\"><button id=\"" + frame.trolls[i].name + "/" + frame.trolls[i].settings[j].name + "/Submit\">Set</button>";
+							htmlFile += "<script>var status;document.getElementById(\"" + frame.trolls[i].name + "/" + frame.trolls[i].settings[j].name + "/Submit\").addEventListener(\"click\", async () => {await fetch(window.location.href + \"s/" + frame.trolls[i].name + "/" + frame.trolls[i].settings[j].name + "/\" + document.getElementById(\"" + frame.trolls[i].name + "/" + frame.trolls[i].settings[j].name + "\").value, {method:\"POST\"});window.location.reload();});</script>";  
 						}
 						htmlFile += "</ul>";
 					}
