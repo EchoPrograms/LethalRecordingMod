@@ -8,6 +8,7 @@
 #define SETTINGTYPE_DOUBLE 0x32
 #define SETTINGTYPE_STEAMID 0x33
 #define SETTINGTYPE_INT 0x34
+#define SETTINGTYPE_STR 0x35
 
 
 std::string sepstr(std::string str, int p, char c)
