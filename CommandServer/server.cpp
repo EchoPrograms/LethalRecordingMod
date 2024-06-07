@@ -549,16 +549,25 @@ int main (int argc, char*args[])
 				if (recUser != "" && key != "No key found") // Same again but without key, now that IP is saved!
 				{
 					std::cout << "HTTP user IP saved!" << std::endl;
-					HTTPResponse response;
-					response.status = 302;
-					response.description = "Authenticated. Continue with request.";
-					HTTPHeader head;
-					head.name = "Location";
-					head.value = "/";
-					response.headers.push_back(head);
-					response.send(clientfd);
-					close(clientfd);
-					continue;
+					if (recUser != "Unity")
+					{
+						HTTPResponse response;
+						response.status = 302;
+						response.description = "Authenticated. Continue with request.";
+						HTTPHeader head;
+						head.name = "Location";
+						head.value = "/";
+						response.headers.push_back(head);
+						response.send(clientfd);
+						close(clientfd);
+						continue;
+					}
+					else
+					{
+
+						req.path.erase(0, 10); // Remove key from the path and treat the path like normal.
+						if (req.path[0] == '/') {req.path.erase(0, 1);}
+					}
 				}
 				if (sepstr(req.path, 0, '/').length() == 1) // Under the hood request that should be made by JS code
 				{
