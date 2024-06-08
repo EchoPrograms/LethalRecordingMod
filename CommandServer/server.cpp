@@ -640,6 +640,48 @@ int main (int argc, char*args[])
 								response.send(clientfd);
 							}
 							break;}
+						case 'a':{
+							if (req.method == HTTP_POST)
+							{
+								Troll nt;
+								if (toTroll(sepstre(req.path, 1, '/'), &nt) < 0)
+								{
+									response.status = 422;
+									response.description = "Bad troll name or setting name";
+									response.send(clientfd);
+								}
+								else
+								{
+									frame.trolls.push_back(nt);
+									response.content = "Success";
+									response.send(clientfd);
+								}
+							}
+							else
+							{
+								response.status = 405;
+								response.description = "Invalid method";
+								response.send(clientfd);
+							}
+							break;}
+						case 'A':{
+							if (req.method == HTTP_POST)
+							{
+								Troll nt;
+								if (toTroll(req.content, &nt))
+								{
+									response.status = 422;
+									response.description = "Bad troll name or setting name";
+									response.send(clientfd);
+								}
+								else
+								{
+									frame.trolls.push_back(nt);
+									response.content = "Success";
+									response.send(clientfd);
+								}
+							}
+							break;}
 						case 't': {
 							if (req.method == HTTP_POST)
 							{
